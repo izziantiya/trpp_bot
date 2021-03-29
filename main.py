@@ -4,7 +4,7 @@ import random
 import string
 import urllib.request as url
 import xml.etree.ElementTree as ET
-
+import setuptools
 import uvicorn
 import vk_api
 from vk_api.longpoll import VkEventType, VkLongPoll
