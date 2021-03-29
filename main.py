@@ -20,7 +20,7 @@ vk_session = vk_api.VkApi(
 longpoll = VkLongPoll(vk_session)
 vk = vk_session.get_api()
 
-
+"""Функция инициации кнопок клавиатуры."""
 def get_button(label, color, payload=""):
     return {
         "action": {"type": "text", "payload": json.dumps(payload), "label": label},
@@ -72,7 +72,7 @@ keyboard_play_2 = {
     ],
 }
 
-
+"""Функция получения случайного слова."""
 def get_valid_word(words):
     word = random.choice(words)  # случайным образом выбирает что-то из списка
     while "-" in word or " " in word:
@@ -80,7 +80,7 @@ def get_valid_word(words):
 
     return word.upper()
 
-
+"""Функция игры Виселица."""
 def hangman():
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
@@ -218,7 +218,7 @@ def hangman():
                             + "\nВведите букву или слово:",
                         )
 
-
+"""Функция гороскопа."""
 def horoscope():
     response = url.urlopen("https://ignio.com/r/export/win/xml/daily/com.xml")
     tree = ET.parse(response)
@@ -364,7 +364,7 @@ def horoscope():
                         )
                         continue
 
-
+"""Функция проверки на победу в игре КНБ."""
 def is_win(player, opponent):
     # return true если игрок победил
     if (
@@ -374,7 +374,7 @@ def is_win(player, opponent):
     ):
         return True
 
-
+"""Функция игры Камень-Ножницы-Бумага."""
 def play_2():
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
@@ -406,7 +406,7 @@ def play_2():
             )
             return
 
-
+"""Главная функция бота, перенаправляющая туда, что выбрал пользователь."""
 async def main():
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
