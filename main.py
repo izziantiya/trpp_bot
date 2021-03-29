@@ -1,3 +1,4 @@
+"""Используемые зависимости"""
 import os
 import json
 import random
