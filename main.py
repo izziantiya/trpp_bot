@@ -11,9 +11,9 @@ import vk_api
 from vk_api.longpoll import VkEventType, VkLongPoll
 from vk_api.utils import get_random_id
 
-
+"""Кнопка (Начать) при первом взаимодействии с ботом."""
 {"command": "start"}
-
+"""Подключение к боту."""
 vk_session = vk_api.VkApi(
     token=os.getenv("TOKEN")
 )
@@ -27,7 +27,7 @@ def get_button(label, color, payload=""):
         "color": color,
     }
 
-
+"""Главная клавиатура бота."""
 keyboard = {
     "one_time": True,
     "buttons": [
@@ -37,7 +37,7 @@ keyboard = {
     ],
 }
 
-
+"""Клавиатура выбора языка в игре Виселица."""
 keyboard_hangman = {
     "one_time": True,
     "buttons": [
@@ -48,7 +48,7 @@ keyboard_hangman = {
     ],
 }
 
-
+"""Клавиатура для Гороскопа."""
 keyboard_horoscope = {
     "one_time": True,
     "buttons": [
@@ -60,7 +60,7 @@ keyboard_horoscope = {
         ]
     ],
 }
-
+"""Клавиатура для игры Камень-Ножницы-Бумага."""
 keyboard_play_2 = {
     "one_time": True,
     "buttons": [
