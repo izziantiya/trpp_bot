@@ -1,0 +1,4 @@
+json==2.0.9
+url==3.8
+vk_api==11.8.0
+setuptools==41.2.0
