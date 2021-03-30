@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "iamabrushb"
+name = "trppbot"
 version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+description = "Bot for users of the VK network"
+authors = ["Elizaveta and Maxim <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
