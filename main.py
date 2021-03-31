@@ -1,3 +1,6 @@
+"""Project: trpp_bot"""
+
+
 """Используемые зависимости."""
 import os
 import json
@@ -10,21 +13,39 @@ import vk_api
 from vk_api.longpoll import VkEventType, VkLongPoll
 from vk_api.utils import get_random_id
 
+
 """Кнопка (Начать) при первом взаимодействии с ботом."""
 {"command": "start"}
-"""Подключение к боту."""
+
+
+"""Получение ключа для сессии."""
 vk_session = vk_api.VkApi(
     token=os.getenv("TOKEN")
 )
+
+"""Прослушивание событий сессии и получение api."""
 longpoll = VkLongPoll(vk_session)
 vk = vk_session.get_api()
 
-"""Функция инициации кнопок клавиатуры."""
+
 def get_button(label, color, payload=""):
+    """Функция инициализации кнопок клавиатуры.
+
+    :param label: заголовок кнопки
+    :type label: str
+    :param color: цвет кнопки
+    :type color: str
+    :param payload: дополнительная информация
+    :type payload: str
+
+    :return: собранная кнопка
+    :rtype: dict
+    """
     return {
         "action": {"type": "text", "payload": json.dumps(payload), "label": label},
         "color": color,
     }
+
 
 """Главная клавиатура бота."""
 keyboard = {
@@ -36,6 +57,7 @@ keyboard = {
     ],
 }
 
+
 """Клавиатура выбора языка в игре Виселица."""
 keyboard_hangman = {
     "one_time": True,
@@ -46,6 +68,7 @@ keyboard_hangman = {
         ]
     ],
 }
+
 
 """Клавиатура для Гороскопа."""
 keyboard_horoscope = {
@@ -59,6 +82,8 @@ keyboard_horoscope = {
         ]
     ],
 }
+
+
 """Клавиатура для игры Камень-Ножницы-Бумага."""
 keyboard_play_2 = {
     "one_time": True,
@@ -71,18 +96,31 @@ keyboard_play_2 = {
     ],
 }
 
-"""Функция получения случайного слова."""
+
 def get_valid_word(words):
+    """Функция получения случайного слова для игры в виселицу.
+
+    :param words: список слов
+    :type words: list
+
+    :return: слово в верхнем регистре
+    :rtype: str
+    """
     word = random.choice(words)  # случайным образом выбирает что-то из списка
     while "-" in word or " " in word:
         word = random.choice(words)
 
     return word.upper()
 
-"""Функция игры Виселица."""
+
 def hangman():
+    """Основная функция игры Виселица. Происходит прослушивание событий и ответ пользователю в зависимости от условий.
+
+    :return: null
+    """
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+            # выбор языка
             if event.text == "🇷🇺":
                 words = [
                     "машина",
@@ -138,7 +176,7 @@ def hangman():
             else:
                 words = ["aback", "abaft", "abandoned", "abashed"]
                 alphabet = set(string.ascii_uppercase)  # Алфавит (Англ)
-            word = get_valid_word(words)
+            word = get_valid_word(words)  # получение слова
             word_letters = set(word)  # буквы в слове
             used_letters = set()  # Использованные
             lives = 6
@@ -150,11 +188,12 @@ def hangman():
                 + " ".join(word_list)
                 + "\nВведите букву или слово:",
             )
+            # просллушивание событий для игры
             for event in longpoll.listen():
                 if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
                     user_letter = event.text.upper()
 
-                    if user_letter in alphabet - used_letters:
+                    if user_letter in alphabet - used_letters:  # если угадали букву
                         used_letters.add(user_letter)
                         if user_letter in word_letters:
                             word_letters.remove(user_letter)
@@ -168,13 +207,13 @@ def hangman():
                                 + user_letter
                                 + " нет в этом слове.",
                             )
-                    elif user_letter in used_letters:
+                    elif user_letter in used_letters:  # если буква введена дважды
                         vk.messages.send(
                             user_id=event.user_id,
                             random_id=get_random_id(),
                             message="\nВы уже использовали эту букву. Попробуйте другую.",
                         )
-                    elif user_letter == word:
+                    elif user_letter == word:  # если слово угадано
                         vk.messages.send(
                             user_id=event.user_id,
                             random_id=get_random_id(),
@@ -182,13 +221,13 @@ def hangman():
                             message="УРА! Вы угадали слово " + word + "!!!",
                         )
                         return
-                    else:
+                    else:  # если ввод произведен некорректно
                         vk.messages.send(
                             user_id=event.user_id,
                             random_id=get_random_id(),
                             message="\nЭто не буква.",
                         )
-                    if lives == 0:
+                    if lives == 0:  # если жизни закончились
                         vk.messages.send(
                             user_id=event.user_id,
                             random_id=get_random_id(),
@@ -196,7 +235,7 @@ def hangman():
                             message="Вы умерли, извините. Слово было " + word,
                         )
                         return
-                    else:
+                    else:  # если выбранной буквы нет в слове
                         word_list = [
                             letter if letter in used_letters else "-" for letter in word
                         ]
@@ -217,21 +256,28 @@ def hangman():
                             + "\nВведите букву или слово:",
                         )
 
-"""Функция гороскопа."""
+
 def horoscope():
+    """Функция гороскопа. Парсинг файла XML и получение данных в необходимом виде. Отправка данных в зависимости от запроса
+    пользователя.
+
+    :return: null
+    """
+    # парсинг сайта, предоставляющий данные
     response = url.urlopen("https://ignio.com/r/export/win/xml/daily/com.xml")
     tree = ET.parse(response)
     root = tree.getroot()
-
     horoscope = {}
     day = ""
 
+    # обработка данных
     for zodiak in root:
         result = {}
         for day in zodiak:
             result.update({day.tag: day.text})
         horoscope.update({zodiak.tag: result})
 
+    # прослушивание событий для выбора даты
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
             event.text = event.text.lower()
@@ -256,6 +302,7 @@ def horoscope():
                 random_id=get_random_id(),
                 message="Напишите интересующий вас знак зодиака",
             )
+            # прослушивание для выбора знака зодиака
             for event in longpoll.listen():
                 if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
                     event.text = event.text.lower()
@@ -363,8 +410,18 @@ def horoscope():
                         )
                         continue
 
-"""Функция проверки на победу в игре КНБ."""
+
 def is_win(player, opponent):
+    """Функция проверки на победу в игре КНБ.
+
+    :param player: пользователь
+    :type player: str
+    :param opponent: компьютер
+    :type: str
+
+    :return: победа или проигрыш пользователя
+    :rtype: bool
+    """
     # return true если игрок победил
     if (
         (player == "К" and opponent == "Н")
@@ -373,13 +430,18 @@ def is_win(player, opponent):
     ):
         return True
 
-"""Функция игры Камень-Ножницы-Бумага."""
+
 def play_2():
+    """Функция игры Камень-Ножницы-Бумага. Прослушивание пользователя и ответ в зависимости от условий.
+
+    :return: null
+    """
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
             event.text = event.text.upper()
             event.text = event.text[:1]
             computer = random.choice(["К", "Н", "Б"])
+            # если ничья
             if event.text == computer:
                 vk.messages.send(
                     user_id=event.user_id,
@@ -388,6 +450,7 @@ def play_2():
                     message="О как. Я не мог такого предположить,но... Наши мысли сходятся",
                 )
                 return
+            # если пользователь выиграл
             if is_win(event.text, computer):
                 vk.messages.send(
                     user_id=event.user_id,
@@ -396,7 +459,7 @@ def play_2():
                     message="Невозможно... Ты победил",
                 )
                 return
-
+            # если пользователь проиграл
             vk.messages.send(
                 user_id=event.user_id,
                 random_id=get_random_id(),
@@ -405,8 +468,12 @@ def play_2():
             )
             return
 
-"""Главная функция бота, перенаправляющая туда, что выбрал пользователь."""
+
 async def main():
+    """Главная функция взаимодействия бота и пользователя. Зависит от запросов пользователя.
+
+    :return: null
+    """
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
             event.text = event.text.lower()
@@ -473,9 +540,9 @@ async def main():
 
                 
 async def app(scope, receive, send):
+    """Функция "Приложение". Получение и отправка запросов сервера."""
     assert scope['type'] == 'http'
 
-    
     await send({
         'type': 'http.response.start',
         'status': 200,
@@ -490,5 +557,3 @@ async def app(scope, receive, send):
     })
     
     await main()
-    
-    
