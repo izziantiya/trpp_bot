@@ -1,4 +1,7 @@
-"""Project: trpp_bot"""
+"""
+Project: trpp_bot
+Version: 0.1.0
+"""
 
 
 """Используемые зависимости."""
@@ -19,11 +22,10 @@ from vk_api.utils import get_random_id
 
 
 """Получение ключа для сессии."""
-vk_session = vk_api.VkApi(
-    token=os.getenv("TOKEN")
-)
+vk_session = vk_api.VkApi(token='c194aa398501f2284a6a99a282493a49003a8f1127e812f5c5729098d336899d6661d7d773bcd1a744a45')
 
-"""Прослушивание событий сессии и получение api."""
+
+# Прослушивание событий сессии и получение api.
 longpoll = VkLongPoll(vk_session)
 vk = vk_session.get_api()
 
@@ -47,7 +49,7 @@ def get_button(label, color, payload=""):
     }
 
 
-"""Главная клавиатура бота."""
+# Главная клавиатура бота.
 keyboard = {
     "one_time": True,
     "buttons": [
@@ -58,7 +60,7 @@ keyboard = {
 }
 
 
-"""Клавиатура выбора языка в игре Виселица."""
+# Клавиатура выбора языка в игре Виселица.
 keyboard_hangman = {
     "one_time": True,
     "buttons": [
@@ -70,7 +72,7 @@ keyboard_hangman = {
 }
 
 
-"""Клавиатура для Гороскопа."""
+# Клавиатура для Гороскопа.
 keyboard_horoscope = {
     "one_time": True,
     "buttons": [
@@ -84,7 +86,7 @@ keyboard_horoscope = {
 }
 
 
-"""Клавиатура для игры Камень-Ножницы-Бумага."""
+# Клавиатура для игры Камень-Ножницы-Бумага.
 keyboard_play_2 = {
     "one_time": True,
     "buttons": [
@@ -417,7 +419,7 @@ def is_win(player, opponent):
     :param player: пользователь
     :type player: str
     :param opponent: компьютер
-    :type: str
+    :type opponent: str
 
     :return: победа или проигрыш пользователя
     :rtype: bool
