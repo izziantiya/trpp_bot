@@ -22,8 +22,9 @@ from vk_api.utils import get_random_id
 
 
 """Получение ключа для сессии."""
-vk_session = vk_api.VkApi(token='c194aa398501f2284a6a99a282493a49003a8f1127e812f5c5729098d336899d6661d7d773bcd1a744a45')
-
+vk_session = vk_api.VkApi(
+    token=os.getenv("TOKEN")
+)
 
 # Прослушивание событий сессии и получение api.
 longpoll = VkLongPoll(vk_session)
